@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+    <h2>Enter a new item for {{restaurant.name}}</h2>
+    <form method='POST' enctype='multipart/form-data' action='{{url_for('newMenuItem', restaurant_id=restaurant.id)}}'><br>
+        <p>Name: <input name='item_name' type='text' ></p>
+        <p>Price: <input name='item_price' type='text' ></p>
+        <p>Description: <input name='item_description' type='text' ></p>
+        <p>Course: <input name='item_course' type='text' ></p>
+        <p><input type='submit' value='Add!'>
+    </form>
+
+</body>
+</html>
