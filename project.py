@@ -58,17 +58,9 @@ def deleteMenuItem(restaurant_id, menu_id):
     if request.method == 'POST':
         session.delete(item)
         session.commit()
-        return redirect('/restaurants/%d/' % restaurant_id, 302)
+        return redirect(url_for('restaurantMenu', restaurant_id=restaurant.id))
     else:
-        output = ""
-        output += "Confirm that you want to delete<br>"
-        output += "{0}<br>".format(item.name)
-        output += "from the menu at<br>"
-        output += "{0}<br>".format(restaurant.name)
-        output += "<form method='POST' enctype='multipart/form-data' action='/restaurants/{0}/items/{1}/delete/'><br>".format(restaurant_id, menu_id)
-        output += "<input type='submit' value='Confirm'><br>"
-        output += "</form>"
-        return output
+        return render_template('deletemenuitem.html', restaurant=restaurant, item=item)
 
 if __name__ == '__main__':
     app.debug = True
