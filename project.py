@@ -1,5 +1,5 @@
 __author__ = 'poojm'
-from flask import Flask, request, redirect, render_template, flash
+from flask import Flask, request, redirect, render_template, flash, jsonify
 app = Flask(__name__)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -9,6 +9,18 @@ engine = create_engine('sqlite:///restaurantmenu.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
+def restaurantMenuJSON(restaurant_id):
+    restaurant = session.query(Restaurant).filter(Restaurant.id == restaurant_id).one()
+    menuItems = session.query(MenuItem).filter(MenuItem.restaurant_id == restaurant.id).all()
+    return jsonify(MenuItems=[i.serialize for i in menuItems])
+
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/JSON')
+def menuItemJSON(restaurant_id, menu_id):
+    restaurant = session.query(Restaurant).filter(Restaurant.id == restaurant_id).one()
+    item = session.query(MenuItem).filter(MenuItem.id == menu_id).one()
+    return jsonify(theItem=item.serialize)
 
 @app.route('/')
 @app.route('/restaurants/<int:restaurant_id>/')
