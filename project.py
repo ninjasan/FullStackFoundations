@@ -1,5 +1,5 @@
 __author__ = 'poojm'
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash
 app = Flask(__name__)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -31,6 +31,7 @@ def newMenuItem(restaurant_id):
                         restaurant = restaurant)
         session.add(newItem)
         session.commit()
+        flash("New menu item created!")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant.id))
     else:
         return render_template('NewMenuItem.html', restaurant=restaurant)
@@ -44,7 +45,7 @@ def editMenuItem(restaurant_id, menu_id):
     if request.method == 'POST':
         session.query(MenuItem).filter(MenuItem.id == menu_id).update({MenuItem.name: request.form['new_name']}, synchronize_session=False)
         session.commit()
-
+        flash("Item has been successfully edited!")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant.id))
     else:
         return render_template('EditMenuItem.html', restaurant=restaurant, item=item)
@@ -58,10 +59,12 @@ def deleteMenuItem(restaurant_id, menu_id):
     if request.method == 'POST':
         session.delete(item)
         session.commit()
+        flash("Item has been successfully deleted!")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant.id))
     else:
         return render_template('deletemenuitem.html', restaurant=restaurant, item=item)
 
 if __name__ == '__main__':
+    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
