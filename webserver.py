@@ -62,8 +62,8 @@ class webserverHandler(BaseHTTPRequestHandler):
                     print restaurant.name
                     output += "<p>"
                     output += "Name: %s</br>" % restaurant.name
-                    output += "<a href='/restaurants/%s/edit/'>Edit Name</a></br>" % restaurant.id
-                    output += "<a href='/restaurants/%s/remove/'>Remove</a></br>" % restaurant.id
+                    output += "<a href='/restaurants/%s/edit'>Edit Name</a></br>" % restaurant.id
+                    output += "<a href='/restaurants/%s/delete'>Remove</a></br>" % restaurant.id
                     output += "</p>"
                 output += "</body></html>"
 
@@ -108,11 +108,11 @@ class webserverHandler(BaseHTTPRequestHandler):
                 print output
                 return
             if self.path.endswith('/delete'):
+                print "got to the delete page!"
                 addrParts = self.path.split('/')
                 curRestaurant = session.query(Restaurant).filter(Restaurant.id == addrParts[2]).one()
                 print curRestaurant
 
-                #form to rename restaurant
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
@@ -120,8 +120,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                 output = ""
                 output += "<html><body>"
                 output += "<h2>Confirm you'd like to delete %s</h2>" % curRestaurant.name
-                output += "<form method='POST' enctype='multipart/form-data' action='/restaurants/%s/edit'>" % addrParts[2]
-                output += "<input name='updateName' type='text' >"
+                output += "<form method='POST' enctype='multipart/form-data' action='/restaurants/%s/delete'>" % addrParts[2]
                 output += "<input type='submit' value='Delete'> </form>"
                 output += "</body></html>"
 
@@ -168,11 +167,6 @@ class webserverHandler(BaseHTTPRequestHandler):
                 self.end_headers()
             if self.path.endswith("/delete"):
                 print "trying to delete..."
-                ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-                if ctype == 'multipart/form-data':
-                    fields = cgi.parse_multipart(self.rfile, pdict)
-                    messagecontent = fields.get('updateName')
-
                 addrParts = self.path.split('/')
                 curRestaurant = session.query(Restaurant).filter(Restaurant.id == addrParts[2]).one()
                 session.delete(curRestaurant)
