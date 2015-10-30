@@ -18,6 +18,7 @@ def restaurantMenu(restaurant_id):
     output = ""
     if restaurant:
         # list out all menu items, prices, descriptions
+        output += "To add a new item, click <a href='/restaurants/{0}/new'>here</a><br><br>".format(restaurant_id)
         menuItems = session.query(MenuItem).filter(MenuItem.restaurant_id == restaurant.id).all()
         for item in menuItems:
             output += item.name
