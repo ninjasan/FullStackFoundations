@@ -70,7 +70,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                 self.wfile.write(output)
                 print output
                 return
-            if self.path.endswith('/restaurants/new'):
+            if self.path.endswith('/new'):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
@@ -86,16 +86,15 @@ class webserverHandler(BaseHTTPRequestHandler):
                 self.wfile.write(output)
                 print output
                 return
-            if re.match("/restaurants/\d+/edit", self.path):
+            if self.path.endswith('/edit'):
+                addrParts = self.path.split('/')
+                curRestaurant = session.query(Restaurant).filter(Restaurant.id == addrParts[2]).one()
+                print curRestaurant
+
                 #form to rename restaurant
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-
-                # get id from path
-                addrParts = self.path.split('/')
-                curRestaurant = session.query(Restaurant).filter(Restaurant.id == addrParts[2]).one()
-                print curRestaurant
 
                 output = ""
                 output += "<html><body>"
@@ -108,14 +107,32 @@ class webserverHandler(BaseHTTPRequestHandler):
                 self.wfile.write(output)
                 print output
                 return
-            if self.path.endswith('/restaurant/confirm'):
-                #if you click submit restaurant will be deleted
+            if self.path.endswith('/delete'):
+                addrParts = self.path.split('/')
+                curRestaurant = session.query(Restaurant).filter(Restaurant.id == addrParts[2]).one()
+                print curRestaurant
+
+                #form to rename restaurant
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+
+                output = ""
+                output += "<html><body>"
+                output += "<h2>Confirm you'd like to delete %s</h2>" % curRestaurant.name
+                output += "<form method='POST' enctype='multipart/form-data' action='/restaurants/%s/edit'>" % addrParts[2]
+                output += "<input name='updateName' type='text' >"
+                output += "<input type='submit' value='Delete'> </form>"
+                output += "</body></html>"
+
+                self.wfile.write(output)
+                print output
                 return
         except IOError:
             self.send_error(404, "File NOT found")
     def do_POST(self):
         try:
-            if self.path.endswith("/restaurants/new"):
+            if self.path.endswith("/new"):
                 ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
                 if ctype == 'multipart/form-data':
                     fields = cgi.parse_multipart(self.rfile, pdict)
@@ -130,7 +147,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.send_header('Location', '/restaurants')
                 self.end_headers()
-            if re.match("/restaurants/\d+/edit", self.path):
+            if self.path.endswith("/edit"):
                 print "trying to post new name..."
                 ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
                 if ctype == 'multipart/form-data':
@@ -143,6 +160,25 @@ class webserverHandler(BaseHTTPRequestHandler):
                 session.commit()
 
                 print "committed!"
+
+                #redirect
+                self.send_response(301)
+                self.send_header('Content-type', 'text/html')
+                self.send_header('Location', '/restaurants')
+                self.end_headers()
+            if self.path.endswith("/delete"):
+                print "trying to delete..."
+                ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+                if ctype == 'multipart/form-data':
+                    fields = cgi.parse_multipart(self.rfile, pdict)
+                    messagecontent = fields.get('updateName')
+
+                addrParts = self.path.split('/')
+                curRestaurant = session.query(Restaurant).filter(Restaurant.id == addrParts[2]).one()
+                session.delete(curRestaurant)
+                session.commit()
+
+                print "deleted!"
 
                 #redirect
                 self.send_response(301)
