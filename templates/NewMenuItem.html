@@ -6,15 +6,19 @@
     <title></title>
 </head>
 <body>
+    <div class="pane">
+        <div class="header">
+            <h1>{{restaurant.name}}</h1>
+        </div>
 
-    <h2>Enter a new item for {{restaurant.name}}</h2>
-    <form method='POST' enctype='multipart/form-data' action='{{url_for('newMenuItem', restaurant_id=restaurant.id)}}'><br>
-        <p>Name: <input name='item_name' type='text' ></p>
-        <p>Price: <input name='item_price' type='text' ></p>
-        <p>Description: <input name='item_description' type='text' ></p>
-        <p>Course: <input name='item_course' type='text' ></p>
-        <p><input type='submit' value='Add!'>
-    </form>
-
+        <h2>Enter information for a new item:</h2>
+        <form method='POST' enctype='multipart/form-data' action='{{url_for('newMenuItem', restaurant_id=restaurant.id)}}'><br>
+            <p>Name: <input name='item_name' type='text' ></p>
+            <p>Price: <input name='item_price' type='text' ></p>
+            <p>Description: <input name='item_description' type='text' ></p>
+            <p>Course: <input name='item_course' type='text' ></p>
+            <input type='submit' value='Add!'>
+        </form>
+    </div>
 </body>
 </html>

@@ -6,8 +6,10 @@
     <title></title>
 </head>
 <body>
-
-        <h1>{{restaurant.name}}</h1>h1>
+    <div class="pane">
+        <div class="header">
+            <h1>{{restaurant.name}}</h1>
+        </div>
 
         <p>Edit the menu item</p>
 
@@ -17,5 +19,6 @@
         </form>
 
         <p><a href='{{url_for('restaurantMenu', restaurant_id=restaurant.id)}}'>Cancel</a></p>
+    </div>
 </body>
 </html>
